@@ -69,7 +69,7 @@ entry_video_file.pack()
 button_browse = Button(root, text="Browse", command=browse_video_file)
 button_browse.pack()
 
-button_process = Button(root, text="Process Video", command=process_video)
+button_process = Button(root, text="Mask Video", command=process_video)
 button_process.pack()
 
 root.mainloop()
