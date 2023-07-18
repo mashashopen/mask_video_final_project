@@ -3,7 +3,7 @@ import os
 from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
-from tkinter import Tk, Label, Entry, Button, filedialog
+from tkinter import Tk, Label, Entry, Button, filedialog, ttk
 
 
 class MaskVideo:
@@ -37,7 +37,10 @@ class MaskVideo:
                 mask_frame_manager = MaskFrame(full_path)
                 masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
                 self.video.write(masked_frame)
+                # Update the progress bar
                 pbar.update(1)
+                progress_bar['value'] = i + 1
+                root.update_idletasks()
         self.video.release()
 
 
@@ -63,13 +66,13 @@ def process_video():
 label_video_file = Label(root, text="Video File:")
 label_video_file.pack()
 
-entry_video_file = Entry(root, width=40)
-entry_video_file.pack()
-
 button_browse = Button(root, text="Browse", command=browse_video_file)
 button_browse.pack()
 
 button_process = Button(root, text="Mask Video", command=process_video)
 button_process.pack()
+
+progress_bar = ttk.Progressbar(root, orient='horizontal', length=200, mode='determinate')
+progress_bar.pack()
 
 root.mainloop()
