@@ -4,6 +4,8 @@ from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
 from tkinter import Tk, Label, Entry, Button, filedialog, ttk
+import shutil
+from PIL import Image, ImageTk
 
 
 class MaskVideo:
@@ -42,11 +44,33 @@ class MaskVideo:
                 progress_bar['value'] = i + 1
                 root.update_idletasks()
         self.video.release()
+        # Remove the unmasked frames directory
+        unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
+        shutil.rmtree(unmasked_dir)
 
 
 root = Tk()
 root.title("Mask Video")
-root.geometry("400x150")
+root.geometry("400x400")
+
+# Load the image
+image_path = "people.jpg"
+image = Image.open(image_path)
+
+# Calculate the new size to fit the GUI while maintaining the aspect ratio
+desired_width = 400
+aspect_ratio = desired_width / image.width
+desired_height = int(image.height * aspect_ratio)
+
+# Resize the image
+image = image.resize((desired_width, desired_height), Image.ANTIALIAS)
+
+# Convert the image to a format compatible with tkinter
+photo = ImageTk.PhotoImage(image)
+
+# Create the label to display the image
+label_image = Label(root, image=photo)
+label_image.pack()
 
 entry_video_file = Entry(root, width=40)
 entry_video_file.pack()
