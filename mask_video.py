@@ -4,6 +4,7 @@ from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
 from tkinter import Tk, Label, Entry, Button, filedialog, ttk
+from tkinter import Scale, HORIZONTAL
 import shutil
 from PIL import Image, ImageTk
 
@@ -51,7 +52,7 @@ class MaskVideo:
 
 root = Tk()
 root.title("Mask Video")
-root.geometry("400x400")
+root.geometry("400x600")
 
 # Load the image
 image_path = "people.jpg"
@@ -72,8 +73,33 @@ photo = ImageTk.PhotoImage(image)
 label_image = Label(root, image=photo)
 label_image.pack()
 
-entry_video_file = Entry(root, width=40)
-entry_video_file.pack()
+# Create a variable to store the blur level selected by the slider
+blur_level = 10  # Initial default blur level
+
+# Function to update the blur level when the slider value changes
+def update_blur_level(value):
+    global blur_level
+    blur_level = int(value)
+
+# Create the slider widget
+slider_blur = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Blur Level:",
+                    command=update_blur_level)
+slider_blur.set(blur_level)  # Set the initial value of the slider
+slider_blur.pack()
+
+# Create a variable to store the coverage level selected by the slider
+coverage_level = 10  # Initial default coverage level
+
+# Function to update the coverage level when the slider value changes
+def update_coverage_level(value):
+    global coverage_level
+    coverage_level = int(value)
+
+# Create the slider widget
+slider_coverage = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Mask size:",
+                    command=update_coverage_level)
+slider_coverage.set(coverage_level)  # Set the initial value of the slider
+slider_coverage.pack()
 
 
 def browse_video_file():
@@ -83,12 +109,15 @@ def browse_video_file():
 
 def process_video():
     video_file = entry_video_file.get()
-    mask_video = MaskVideo(video_file, (5, 5), 10)
+    mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level)
     mask_video.mask_video_flow()
 
 
 label_video_file = Label(root, text="Video File:")
 label_video_file.pack()
+
+entry_video_file = Entry(root, width=40)
+entry_video_file.pack()
 
 button_browse = Button(root, text="Browse", command=browse_video_file)
 button_browse.pack()
