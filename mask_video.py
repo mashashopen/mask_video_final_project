@@ -1,13 +1,11 @@
 import cv2
 import os
+import shutil
+from PIL import Image, ImageTk
+from tkinter import Tk, Label, Entry, Button, filedialog, ttk, Scale, HORIZONTAL
 from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
-from tkinter import Tk, Label, Entry, Button, filedialog, ttk
-from tkinter import Scale, HORIZONTAL
-import shutil
-from PIL import Image, ImageTk
-
 
 class MaskVideo:
     def __init__(self, video_file: str, kernel_size: tuple, epsilon: float):
@@ -76,31 +74,23 @@ label_image.pack()
 # Create a variable to store the blur level selected by the slider
 blur_level = 10  # Initial default blur level
 
-# Function to update the blur level when the slider value changes
-def update_blur_level(value):
-    global blur_level
-    blur_level = int(value)
-
 # Create the slider widget
-slider_blur = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Blur Level:",
-                    command=update_blur_level)
+slider_blur = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Blur Level:")
 slider_blur.set(blur_level)  # Set the initial value of the slider
 slider_blur.pack()
 
 # Create a variable to store the coverage level selected by the slider
 coverage_level = 10  # Initial default coverage level
 
-# Function to update the coverage level when the slider value changes
-def update_coverage_level(value):
-    global coverage_level
-    coverage_level = int(value)
-
 # Create the slider widget
-slider_coverage = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Mask size:",
-                    command=update_coverage_level)
+slider_coverage = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Mask size:")
 slider_coverage.set(coverage_level)  # Set the initial value of the slider
 slider_coverage.pack()
 
+def update_parameters():
+    global blur_level, coverage_level
+    blur_level = slider_blur.get()
+    coverage_level = slider_coverage.get()
 
 def browse_video_file():
     filename = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4")])
@@ -108,10 +98,16 @@ def browse_video_file():
     entry_video_file.insert(0, filename)
 
 def process_video():
+    if not blur_level or not coverage_level:
+        print("Please update the parameters first.")
+        return
+
     video_file = entry_video_file.get()
     mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level)
     mask_video.mask_video_flow()
 
+button_update_params = Button(root, text="Update Parameters", command=update_parameters)
+button_update_params.pack()
 
 label_video_file = Label(root, text="Video File:")
 label_video_file.pack()
