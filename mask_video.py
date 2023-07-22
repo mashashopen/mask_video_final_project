@@ -8,18 +8,23 @@ from mask_frame import MaskFrame
 from tqdm import tqdm
 
 class MaskVideo:
-    def __init__(self, video_file: str, kernel_size: tuple, epsilon: float):
+    def __init__(self, video_file: str, kernel_size: tuple, epsilon: float, destination_folder: str = None):
         self.extract_frames_manager = ExtractFrames(video_file)
-        self.video_file_name = video_file
+        self.video_file_name = os.path.basename(video_file)  # Use the video file name without path
         self.kernel_size = kernel_size
         self.epsilon = epsilon
 
         self.fps = self.extract_frames_manager.extract_frames_and_get_fps()
 
-        # Create a VideoWriter object to write the frames to a video file
+        if destination_folder:
+            # Use the chosen destination folder path if provided
+            self.output_video_path = os.path.join(destination_folder, self.video_file_name + '-masked.mp4')
+        else:
+            # If destination_folder is not provided, use Downloads folder
+            self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", self.video_file_name + '-masked.mp4')
+
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.video = cv2.VideoWriter(self.video_file_name + '-masked.mp4', self.fourcc, self.fps,
-                                      self._get_width_height())
+        self.video = cv2.VideoWriter(self.output_video_path, self.fourcc, self.fps, self._get_width_height())
 
     def _get_width_height(self) -> tuple:
         dir_name = self.extract_frames_manager.get_unmasked_dir_name()
@@ -129,14 +134,23 @@ def browse_video_file():
     entry_video_file.delete(0, "end")
     entry_video_file.insert(0, filename)
 
+def choose_destination_folder():
+    folder_path = filedialog.askdirectory()
+    entry_destination_folder.delete(0, "end")
+    entry_destination_folder.insert(0, folder_path)
+
+# Update the process_video function to include the destination folder
 def process_video():
     if not blur_level or not coverage_level:
         print("Please update the parameters first.")
         return
 
     video_file = entry_video_file.get()
-    mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level)
+    destination_folder = entry_destination_folder.get()  # Get the chosen destination folder
+
+    mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level, destination_folder)
     mask_video.mask_video_flow()
+
 
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
 button_update_params.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
@@ -147,10 +161,21 @@ entry_video_file.grid(row=4, column=0, columnspan=2, padx=10, pady=5)
 button_browse = Button(root, text="Browse video file", command=browse_video_file)
 button_browse.grid(row=5, column=0, columnspan=2, padx=10, pady=5)
 
+# Create a label and entry widget for the destination folder
+label_destination_folder = Label(root, text="Destination Dir:")
+label_destination_folder.grid(row=6, column=0, padx=0, pady=5)  # Move the label to row 5
+
+entry_destination_folder = Entry(root, width=40)
+entry_destination_folder.grid(row=6, column=0,columnspan=2, padx=10, pady=5)  # Move the entry to row 5
+
+# Create a button to browse and select the destination folder
+button_browse_destination = Button(root, text="Browse Destination", command=choose_destination_folder)
+button_browse_destination.grid(row=7, column=0,columnspan=2, padx=10, pady=5)  # Move the button to row 5
+
 button_process = Button(root, text="Mask Video", command=process_video)
-button_process.grid(row=6, column=0, columnspan=2, padx=10, pady=5)
+button_process.grid(row=8, column=0, columnspan=2, padx=10, pady=5)
 
 progress_bar = ttk.Progressbar(root, orient='horizontal', length=200, mode='determinate')
-progress_bar.grid(row=7, column=0, columnspan=2, padx=10, pady=5)
+progress_bar.grid(row=9, column=0, columnspan=2, padx=10, pady=5)
 
 root.mainloop()
