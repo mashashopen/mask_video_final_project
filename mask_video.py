@@ -139,6 +139,10 @@ def choose_destination_folder():
     entry_destination_folder.delete(0, "end")
     entry_destination_folder.insert(0, folder_path)
 
+# Create a label for displaying the status message
+label_status_message = Label(root, text="", fg="green")
+label_status_message.grid(row=10, column=0, columnspan=2, padx=10, pady=5)
+
 # Update the process_video function to include the destination folder
 def process_video():
     if not blur_level or not coverage_level:
@@ -150,6 +154,9 @@ def process_video():
 
     mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level, destination_folder)
     mask_video.mask_video_flow()
+
+    # Display the status message after the masking and downloading process is finished
+    label_status_message.config(text="Masking finished, the masked video was downloaded to: {}".format(mask_video.output_video_path))
 
 
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
