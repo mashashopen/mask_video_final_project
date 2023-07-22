@@ -50,14 +50,14 @@ class MaskVideo:
 
 root = Tk()
 root.title("Mask Video")
-root.geometry("400x600")
+root.geometry("400x700")
 
 # Load the image
 image_path = "people.jpg"
 image = Image.open(image_path)
 
 # Calculate the new size to fit the GUI while maintaining the aspect ratio
-desired_width = 400
+desired_width = 300
 aspect_ratio = desired_width / image.width
 desired_height = int(image.height * aspect_ratio)
 
@@ -70,6 +70,31 @@ photo = ImageTk.PhotoImage(image)
 # Create the label to display the image
 label_image = Label(root, image=photo)
 label_image.pack()
+
+def update_masked_image():
+    global blur_level, coverage_level
+
+    # Load the original image
+    original_image = Image.open(image_path)
+
+    # Create a MaskFrame object to apply the mask
+    mask_frame_manager = MaskFrame(image_path)
+    masked_frame = mask_frame_manager.mask_frame((blur_level, blur_level), coverage_level)
+
+    # Convert the masked_frame to RGB format
+    masked_frame_rgb = cv2.cvtColor(masked_frame, cv2.COLOR_BGR2RGB)
+
+    # Resize the masked image to the same size as the original image
+    masked_image = Image.fromarray(masked_frame_rgb)
+    masked_image = masked_image.resize((desired_width, desired_height), Image.ANTIALIAS)
+
+    # Convert the masked image to PhotoImage and update the displayed image
+    masked_photo = ImageTk.PhotoImage(masked_image)
+    label_masked_image.configure(image=masked_photo)
+    label_masked_image.image = masked_photo  # Keep a reference to prevent image garbage collection
+
+label_masked_image = Label(root, image=photo)
+label_masked_image.pack()
 
 # Create a variable to store the blur level selected by the slider
 blur_level = 10  # Initial default blur level
@@ -91,6 +116,7 @@ def update_parameters():
     global blur_level, coverage_level
     blur_level = slider_blur.get()
     coverage_level = slider_coverage.get()
+    update_masked_image()  # Update the masked image when parameters change
 
 def browse_video_file():
     filename = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4")])
@@ -109,13 +135,10 @@ def process_video():
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
 button_update_params.pack()
 
-label_video_file = Label(root, text="Video File:")
-label_video_file.pack()
-
 entry_video_file = Entry(root, width=40)
 entry_video_file.pack()
 
-button_browse = Button(root, text="Browse", command=browse_video_file)
+button_browse = Button(root, text="Browse video file", command=browse_video_file)
 button_browse.pack()
 
 button_process = Button(root, text="Mask Video", command=process_video)
