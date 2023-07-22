@@ -50,7 +50,7 @@ class MaskVideo:
 
 root = Tk()
 root.title("Mask Video")
-root.geometry("400x700")
+root.geometry("650x650")
 
 # Load the image
 image_path = "people.jpg"
@@ -67,9 +67,9 @@ image = image.resize((desired_width, desired_height), Image.ANTIALIAS)
 # Convert the image to a format compatible with tkinter
 photo = ImageTk.PhotoImage(image)
 
-# Create the label to display the image
+# Create the label to display the original image
 label_image = Label(root, image=photo)
-label_image.pack()
+label_image.grid(row=0, column=0, padx=10, pady=10)
 
 def update_masked_image():
     global blur_level, coverage_level
@@ -93,24 +93,30 @@ def update_masked_image():
     label_masked_image.configure(image=masked_photo)
     label_masked_image.image = masked_photo  # Keep a reference to prevent image garbage collection
 
-label_masked_image = Label(root, image=photo)
-label_masked_image.pack()
+    # Convert the masked image to PhotoImage and update the displayed image
+    masked_photo = ImageTk.PhotoImage(masked_image)
+    label_masked_image.configure(image=masked_photo)
+    label_masked_image.image = masked_photo  # Keep a reference to prevent image garbage collection
+
+# Create the label to display the masked image
+label_masked_image = Label(root, image=photo)  # Initialize with the original image
+label_masked_image.grid(row=0, column=1, padx=10, pady=10)
 
 # Create a variable to store the blur level selected by the slider
 blur_level = 10  # Initial default blur level
 
-# Create the slider widget
+# Create the slider widget for blur level
 slider_blur = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Blur Level:")
 slider_blur.set(blur_level)  # Set the initial value of the slider
-slider_blur.pack()
+slider_blur.grid(row=1, column=0, columnspan=2, padx=10, pady=5)
 
 # Create a variable to store the coverage level selected by the slider
 coverage_level = 10  # Initial default coverage level
 
-# Create the slider widget
+# Create the slider widget for coverage level
 slider_coverage = Scale(root, from_=1, to=50, orient=HORIZONTAL, length=300, label="Mask size:")
 slider_coverage.set(coverage_level)  # Set the initial value of the slider
-slider_coverage.pack()
+slider_coverage.grid(row=2, column=0, columnspan=2, padx=10, pady=5)
 
 def update_parameters():
     global blur_level, coverage_level
@@ -133,18 +139,18 @@ def process_video():
     mask_video.mask_video_flow()
 
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
-button_update_params.pack()
+button_update_params.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
 entry_video_file = Entry(root, width=40)
-entry_video_file.pack()
+entry_video_file.grid(row=4, column=0, columnspan=2, padx=10, pady=5)
 
 button_browse = Button(root, text="Browse video file", command=browse_video_file)
-button_browse.pack()
+button_browse.grid(row=5, column=0, columnspan=2, padx=10, pady=5)
 
 button_process = Button(root, text="Mask Video", command=process_video)
-button_process.pack()
+button_process.grid(row=6, column=0, columnspan=2, padx=10, pady=5)
 
 progress_bar = ttk.Progressbar(root, orient='horizontal', length=200, mode='determinate')
-progress_bar.pack()
+progress_bar.grid(row=7, column=0, columnspan=2, padx=10, pady=5)
 
 root.mainloop()
