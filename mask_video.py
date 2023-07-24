@@ -2,7 +2,7 @@ import cv2
 import os
 import shutil
 from PIL import Image, ImageTk
-from tkinter import Tk, Label, Entry, Button, filedialog, ttk, Scale, HORIZONTAL
+from tkinter import Tk, Label, Entry, Button, filedialog, ttk, Scale, HORIZONTAL, Toplevel
 from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
@@ -149,6 +149,17 @@ def choose_destination_folder():
 label_status_message = Label(root, text="", fg="green")
 label_status_message.grid(row=10, column=0, columnspan=2, padx=10, pady=5)
 
+def show_finish_message(output_path):
+    popup_window = Toplevel(root)
+    popup_window.title("Masking Finished")
+    popup_window.geometry("400x150")  # Increase the size of the pop-up window
+
+    message_label = Label(popup_window, text=f"Masking finished, the masked video was downloaded to:\n{output_path}")
+    message_label.pack(padx=10, pady=10)
+
+    close_button = Button(popup_window, text="Close", command=popup_window.destroy)
+    close_button.pack(pady=5)
+
 # Update the process_video function to include the destination folder
 def process_video():
     if not blur_level or not coverage_level:
@@ -161,9 +172,8 @@ def process_video():
     mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level, destination_folder)
     mask_video.mask_video_flow()
 
-    # Display the status message after the masking and downloading process is finished
-    label_status_message.config(text="Masking finished, the masked video was downloaded to: {}".format(mask_video.output_video_path))
-
+    # Show the finish message in a pop-up window
+    show_finish_message(mask_video.output_video_path)
 
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
 button_update_params.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
