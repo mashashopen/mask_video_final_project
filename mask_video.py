@@ -40,15 +40,18 @@ class MaskVideo:
 
     def mask_video_flow(self):
         unmasked_frames = self._get_unmasked_sorted_frames()
-        with tqdm(total=len(unmasked_frames), desc="Progress", unit="frame") as pbar:
+        total_frames = len(unmasked_frames)
+        with tqdm(total=total_frames, desc="Progress", unit="frame") as pbar:
             for i, frame in enumerate(unmasked_frames):
                 full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + frame
                 mask_frame_manager = MaskFrame(full_path)
                 masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
                 self.video.write(masked_frame)
-                # Update the progress bar
+                # Calculate the percentage of masked frames
+                percentage = (i + 1) / total_frames * 100
+                # Update the progress bar using the percentage
                 pbar.update(1)
-                progress_bar['value'] = i + 1
+                progress_bar['value'] = percentage
                 root.update_idletasks()
         self.video.release()
         # Remove the unmasked frames directory
