@@ -6,6 +6,7 @@ from tkinter import Tk, Label, Entry, Button, filedialog, ttk, Scale, HORIZONTAL
 from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
+import random
 
 class MaskVideo:
     def __init__(self, video_file: str, kernel_size: tuple, epsilon: float, destination_folder: str = None):
@@ -18,10 +19,12 @@ class MaskVideo:
 
         if destination_folder:
             # Use the chosen destination folder path if provided
-            self.output_video_path = os.path.join(destination_folder, self.video_file_name + '-masked.mp4')
+            random_string = str(random.randint(10000000, 99999999))  # Generate a random 8-digit number
+            self.output_video_path = os.path.join(destination_folder, random_string + self.video_file_name.split(".mp4")[0] + f"-masked-{blur_level}-{coverage_level}.mp4")
         else:
             # If destination_folder is not provided, use Downloads folder
-            self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", self.video_file_name + '-masked.mp4')
+            random_string = str(random.randint(10000000, 99999999))  # Generate a random 8-digit number
+            self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", random_string + self.video_file_name.split(".mp4")[0] + f"-masked-{blur_level}-{coverage_level}.mp4")
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.video = cv2.VideoWriter(self.output_video_path, self.fourcc, self.fps, self._get_width_height())
