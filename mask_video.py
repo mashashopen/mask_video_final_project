@@ -175,6 +175,30 @@ def process_video():
     # Show the finish message in a pop-up window
     show_finish_message(mask_video.output_video_path)
 
+def show_help_message():
+    help_text = """
+    How to Use the Mask Video GUI:
+    
+    1. Update Parameters: Use the sliders to adjust the blur level and mask size parameters. Click on 'Update Parameters' to impliment them on the preview and video.
+    2. Browse Video File: Click on the 'Browse video file' button to select the video file you want to mask.
+    3. Browse Destination: Click on the 'Browse Destination' button to choose the output folder for the masked video.
+    4. Mask Video: Click on the 'Mask Video' button to start the masking process.
+    5. Progress Bar: The progress bar will show the percentage of frames masked.
+    6. Masking Finished: After masking is finished, a pop-up message will appear with the path to the masked video.
+    
+    Note: The 'Blur Level' controls the amount of blur applied to the video frames, and the 'Mask size' controls
+    the size of the masked region.
+    """
+    popup_window = Toplevel(root)
+    popup_window.title("Help")
+    popup_window.geometry("400x400")
+
+    help_label = Label(popup_window, text=help_text, justify='left', wraplength=380)
+    help_label.pack(padx=10, pady=10)
+
+    close_button = Button(popup_window, text="Close", command=popup_window.destroy)
+    close_button.pack(pady=5)
+
 button_update_params = Button(root, text="Update Parameters", command=update_parameters)
 button_update_params.grid(row=3, column=0, columnspan=2, padx=10, pady=5)
 
@@ -200,5 +224,9 @@ button_process.grid(row=8, column=0, columnspan=2, padx=10, pady=5)
 
 progress_bar = ttk.Progressbar(root, orient='horizontal', length=200, mode='determinate')
 progress_bar.grid(row=9, column=0, columnspan=2, padx=10, pady=5)
+
+# Create the Help button
+button_help = Button(root, text="Help", command=show_help_message)
+button_help.grid(row=10, column=1, columnspan=2, padx=10, pady=0)
 
 root.mainloop()
