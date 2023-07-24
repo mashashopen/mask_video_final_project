@@ -61,7 +61,7 @@ class MaskVideo:
 
 root = Tk()
 root.title("Mask Video")
-root.geometry("650x650")
+root.geometry("650x630")
 
 # Load the image
 image_path = "people.jpg"
@@ -152,7 +152,7 @@ label_status_message.grid(row=10, column=0, columnspan=2, padx=10, pady=5)
 def show_finish_message(output_path):
     popup_window = Toplevel(root)
     popup_window.title("Masking Finished")
-    popup_window.geometry("400x150")  # Increase the size of the pop-up window
+    popup_window.geometry("500x100")  # Increase the size of the pop-up window
 
     message_label = Label(popup_window, text=f"Masking finished, the masked video was downloaded to:\n{output_path}")
     message_label.pack(padx=10, pady=10)
@@ -184,7 +184,7 @@ def show_help_message():
     3. Browse Destination: Click on the 'Browse Destination' button to choose the output folder for the masked video.
     4. Mask Video: Click on the 'Mask Video' button to start the masking process.
     5. Progress Bar: The progress bar will show the percentage of frames masked.
-    6. Masking Finished: After masking is finished, a pop-up message will appear with the path to the masked video.
+    6. Masking Finished: After masking is finished, a pop-up message will appear with the path to the masked video. Saving format: "random number-video name-blur levle-mask size".
     
     Note: The 'Blur Level' controls the amount of blur applied to the video frames, and the 'Mask size' controls
     the size of the masked region.
