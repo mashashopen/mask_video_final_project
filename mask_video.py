@@ -178,16 +178,20 @@ def process_video():
 def show_help_message():
     help_text = """
     How to Use the Mask Video GUI:
-    
-    1. Update Parameters: Use the sliders to adjust the blur level and mask size parameters. Click on 'Update Parameters' to impliment them on the preview and video.
-    2. Browse Video File: Click on the 'Browse video file' button to select the video file you want to mask.
-    3. Browse Destination: Click on the 'Browse Destination' button to choose the output folder for the masked video.
-    4. Mask Video: Click on the 'Mask Video' button to start the masking process.
-    5. Progress Bar: The progress bar will show the percentage of frames masked.
-    6. Masking Finished: After masking is finished, a pop-up message will appear with the path to the masked video. Saving format: "random number-video name-blur levle-mask size".
-    
-    Note: The 'Blur Level' controls the amount of blur applied to the video frames, and the 'Mask size' controls
-    the size of the masked region.
+
+1. Update Parameters: Adjust the blur level and mask size parameters using the sliders. Click 'Update Parameters' to apply the changes to the preview and video.
+
+2. Browse Video File: Click 'Browse video file' to select the video you want to mask.
+
+3. Browse Destination: Click 'Browse Destination' to choose the output folder for the masked video. If no destination is chosen, the masked video will be saved in the "Downloads" directory by default.
+
+4. Mask Video: Click 'Mask Video' to start the masking process.
+
+5. Progress Bar: The progress bar shows the percentage of frames that have been masked.
+
+6. Masking Finished: Once the masking process is complete, a pop-up message will display the path to the masked video. The saved format will be in the following pattern: "random_number-video_name-blur_level-mask_size".
+
+Note: The 'Blur Level' controls the amount of blur applied to the video frames, while the 'Mask size' controls the size of the masked region.
     """
     popup_window = Toplevel(root)
     popup_window.title("Help")
