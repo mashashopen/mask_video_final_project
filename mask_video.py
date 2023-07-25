@@ -52,6 +52,7 @@ class MaskVideo:
                 # Update the progress bar using the percentage
                 pbar.update(1)
                 progress_bar['value'] = percentage
+                percentage_label.config(text=f"Progress: {percentage:.2f}%")  # Update the percentage label
                 root.update_idletasks()
         self.video.release()
         # Remove the unmasked frames directory
@@ -168,7 +169,9 @@ def process_video():
 
     video_file = entry_video_file.get()
     destination_folder = entry_destination_folder.get()  # Get the chosen destination folder
-
+    progress_bar['value'] = 0
+    percentage_label.config(text="Progress: 00.00%")
+    root.update_idletasks()
     mask_video = MaskVideo(video_file, (blur_level, blur_level), coverage_level, destination_folder)
     mask_video.mask_video_flow()
 
@@ -229,8 +232,12 @@ button_process.grid(row=8, column=0, columnspan=2, padx=10, pady=5)
 progress_bar = ttk.Progressbar(root, orient='horizontal', length=200, mode='determinate')
 progress_bar.grid(row=9, column=0, columnspan=2, padx=10, pady=5)
 
+# Create the label to display the percentage of completion
+percentage_label = Label(root, text="Progress: 00.00%", fg="green")
+percentage_label.grid(row=10, column=0, columnspan=2, padx=10, pady=0)
+
 # Create the Help button
 button_help = Button(root, text="Help", command=show_help_message)
-button_help.grid(row=10, column=1, columnspan=2, padx=10, pady=0)
+button_help.grid(row=10, column=1, columnspan=2, padx=12, pady=0)
 
 root.mainloop()
