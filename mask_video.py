@@ -195,7 +195,7 @@ Note: The 'Blur Level' controls the amount of blur applied to the video frames, 
     """
     popup_window = Toplevel(root)
     popup_window.title("Help")
-    popup_window.geometry("400x400")
+    popup_window.geometry("400x500")
 
     help_label = Label(popup_window, text=help_text, justify='left', wraplength=380)
     help_label.pack(padx=10, pady=10)
