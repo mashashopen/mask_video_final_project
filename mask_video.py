@@ -73,7 +73,7 @@ class MaskVideo:
             for i, frame in enumerate(unmasked_frames):
                 full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + frame
                 mask_frame_manager = MaskFrame(full_path)
-                for face in mask_frame_manager.get_all_faces_locations():
+                for face in mask_frame_manager.all_faces_locations():
                     row = {"number_of_frame": i, "x1": face[0], "y1": face[1], "x2": face[2], "y2": face[3]}
                     rows.append(row)
                 masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
@@ -88,9 +88,9 @@ class MaskVideo:
         self.video.release()
         # Remove the unmasked frames directory
         unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
-        shutil.rmtree(unmasked_dir)
 
         self.extract_data_to_csv_file(rows, unmasked_frames)
+        shutil.rmtree(unmasked_dir)
 
 
 
@@ -109,7 +109,7 @@ aspect_ratio = desired_width / image.width
 desired_height = int(image.height * aspect_ratio)
 
 # Resize the image
-image = image.resize((desired_width, desired_height), Image.ANTIALIAS)
+image = image.resize((desired_width, desired_height), Image.LANCZOS)
 
 # Convert the image to a format compatible with tkinter
 photo = ImageTk.PhotoImage(image)
@@ -133,7 +133,7 @@ def update_masked_image():
 
     # Resize the masked image to the same size as the original image
     masked_image = Image.fromarray(masked_frame_rgb)
-    masked_image = masked_image.resize((desired_width, desired_height), Image.ANTIALIAS)
+    masked_image = masked_image.resize((desired_width, desired_height), Image.LANCZOS)
 
     # Convert the masked image to PhotoImage and update the displayed image
     masked_photo = ImageTk.PhotoImage(masked_image)
