@@ -26,16 +26,35 @@ class MaskFrame:
 
         return faces_locations
 
-    def mask_frame(self, kernel_size, epsilon):
+    def adjust_coordinates(self, x1, y1, x2, y2, img_width, img_height):
+        # Calculate the width and height of the face region
+        face_width = x2 - x1
+        face_height = y2 - y1
 
+        # If the face region is larger than the image, reduce its size to fit within the image
+        if face_width > img_width:
+            diff = face_width - img_width
+            x1 += diff // 2
+            x2 = x1 + img_width
+
+        if face_height > img_height:
+            diff = face_height - img_height
+            y1 += diff // 2
+            y2 = y1 + img_height
+
+        return x1, y1, x2, y2
+
+    def mask_frame(self, kernel_size, epsilon):
         if not self.faces_locations:
             return cv2.cvtColor(np.array(self.unmasked_image), cv2.COLOR_BGR2RGB)
 
         img = np.array(self.unmasked_image)
         img = img[:, :, ::-1].copy()
 
-        for face_loc in self.faces_locations:
+        img_width = img.shape[1]
+        img_height = img.shape[0]
 
+        for face_loc in self.faces_locations:
             x1, y1, x2, y2 = face_loc
             x1 -= epsilon
             y1 -= epsilon
@@ -45,12 +64,16 @@ class MaskFrame:
             # Ensure face region is within image boundaries
             x1 = max(0, x1)
             y1 = max(0, y1)
-            x2 = min(x2, img.shape[1])
-            y2 = min(y2, img.shape[0])
+            x2 = min(x2, img_width)
+            y2 = min(y2, img_height)
+
+            # Adjust face coordinates to fit within the boundaries
+            x1, y1, x2, y2 = self.adjust_coordinates(x1, y1, x2, y2, img_width, img_height)
 
             # Check if face region is still valid
             if x1 >= x2 or y1 >= y2:
                 continue
+
             face_img = img[y1:y2, x1:x2]
             if kernel_size[0] % 2 == 0 or kernel_size[0] < 1:
                 kernel_dim = max(3, kernel_size[0] + 1)
