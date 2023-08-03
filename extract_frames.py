@@ -5,6 +5,7 @@ import os
 import retina
 import sys
 import time
+from PIL import Image
 
 UNMASKED_FRAMES_DIR = "-unmasked_frames"
 SAVING_FRAMES_PER_SECOND = 30

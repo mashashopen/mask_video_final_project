@@ -1,5 +1,6 @@
 import csv
-
+import time
+import datetime
 import cv2
 import os
 import shutil
@@ -18,20 +19,16 @@ class MaskVideo:
         self.epsilon = epsilon
 
         self.fps = self.extract_frames_manager.extract_frames_and_get_fps()
-
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         if destination_folder:
-            # Use the chosen destination folder path if provided
-            random_string = str(random.randint(10000000, 99999999))  # Generate a random 8-digit number
-            self.output_video_path = os.path.join(destination_folder, random_string + self.video_file_name.split(".mp4")[0] + f"-masked-{blur_level}-{coverage_level}.mp4")
+            # Use the chosen destination folder path if provided            
+            self.output_video_path = os.path.join(destination_folder, f"{timestamp}_{self.video_file_name.split('.mp4')[0]}-masked-{blur_level}-{coverage_level}.mp4")
         else:
-            # If destination_folder is not provided, use Downloads folder
-            random_string = str(random.randint(10000000, 99999999))  # Generate a random 8-digit number
-            self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", random_string + self.video_file_name.split(".mp4")[0] + f"-masked-{blur_level}-{coverage_level}.mp4")
+            # If destination_folder is not provided, use Downloads folder            
+            self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", f"{timestamp}_{self.video_file_name.split('.mp4')[0]}-masked-{blur_level}-{coverage_level}.mp4")
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.video = cv2.VideoWriter(self.video_file_name[:-4] + '-masked.mp4', self.fourcc, self.fps,
-                                      self._get_width_height())
-
+        self.video = cv2.VideoWriter(self.output_video_path, self.fourcc, self.fps, self._get_width_height())
     def _get_width_height(self) -> tuple:
         dir_name = self.extract_frames_manager.get_unmasked_dir_name()
         frame = cv2.imread(os.path.join(dir_name, self._get_unmasked_sorted_frames()[0]))
@@ -64,16 +61,15 @@ class MaskVideo:
         print("CSV file exported successfully.")
 
     def mask_video_flow(self):
+        start = time.time()
         unmasked_frames = self._get_unmasked_sorted_frames()
         rows = []
-
-
         total_frames = len(unmasked_frames)
         with tqdm(total=total_frames, desc="Progress", unit="frame") as pbar:
             for i, frame in enumerate(unmasked_frames):
                 full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + frame
                 mask_frame_manager = MaskFrame(full_path)
-                for face in mask_frame_manager.get_all_faces_locations():
+                for face in mask_frame_manager.all_faces_locations():
                     row = {"number_of_frame": i, "x1": face[0], "y1": face[1], "x2": face[2], "y2": face[3]}
                     rows.append(row)
                 masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
@@ -88,10 +84,11 @@ class MaskVideo:
         self.video.release()
         # Remove the unmasked frames directory
         unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
-        shutil.rmtree(unmasked_dir)
-
         self.extract_data_to_csv_file(rows, unmasked_frames)
-
+        shutil.rmtree(unmasked_dir)
+        end = time.time()
+        total = (end-start) / 60
+        print("The masking process time: ", total)
 
 
 
