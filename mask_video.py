@@ -1,3 +1,5 @@
+import csv
+
 import cv2
 import os
 import shutil
@@ -27,7 +29,8 @@ class MaskVideo:
             self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", random_string + self.video_file_name.split(".mp4")[0] + f"-masked-{blur_level}-{coverage_level}.mp4")
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        self.video = cv2.VideoWriter(self.output_video_path, self.fourcc, self.fps, self._get_width_height())
+        self.video = cv2.VideoWriter(self.video_file_name[:-4] + '-masked.mp4', self.fourcc, self.fps,
+                                      self._get_width_height())
 
     def _get_width_height(self) -> tuple:
         dir_name = self.extract_frames_manager.get_unmasked_dir_name()
@@ -38,13 +41,41 @@ class MaskVideo:
     def _get_unmasked_sorted_frames(self) -> list:
         return self.extract_frames_manager.sorted_frames_files()
 
+    def extract_data_to_csv_file(self, data, unmasked_frames):
+        # Specify the field names (column names) for the CSV file
+        fieldnames = ["number_of_frame", "x1", "y1", "x2", "y2"]
+
+        filename_without_extension = self.video_file_name[:-4]
+        # Specify the file name for the CSV file
+        filename = filename_without_extension + ".csv"
+
+        # Open the CSV file in write mode
+        with open(filename, "w", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            # Add comments or metadata to the CSV file
+            csvfile.write(self.extract_frames_manager.get_video_dimensions() + "\n")
+            csvfile.write("Number of frames:" + str(len(unmasked_frames)) + "\n")
+            # Write the header (field names)
+            writer.writeheader()
+            # Write the data rows
+            for row in data:
+                writer.writerow(row)
+            writer.writerow(row)
+        print("CSV file exported successfully.")
+
     def mask_video_flow(self):
         unmasked_frames = self._get_unmasked_sorted_frames()
+        rows = []
+
+
         total_frames = len(unmasked_frames)
         with tqdm(total=total_frames, desc="Progress", unit="frame") as pbar:
             for i, frame in enumerate(unmasked_frames):
                 full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + frame
                 mask_frame_manager = MaskFrame(full_path)
+                for face in mask_frame_manager.get_all_faces_locations():
+                    row = {"number_of_frame": i, "x1": face[0], "y1": face[1], "x2": face[2], "y2": face[3]}
+                    rows.append(row)
                 masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
                 self.video.write(masked_frame)
                 # Calculate the percentage of masked frames
@@ -57,6 +88,10 @@ class MaskVideo:
         # Remove the unmasked frames directory
         unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
         shutil.rmtree(unmasked_dir)
+
+        self.extract_data_to_csv_file(rows, unmasked_frames)
+
+
 
 
 root = Tk()
@@ -222,6 +257,7 @@ entry_destination_folder.grid(row=6, column=0,columnspan=2, padx=10, pady=5)  # 
 # Create a button to browse and select the destination folder
 button_browse_destination = Button(root, text="Browse Destination", command=choose_destination_folder)
 button_browse_destination.grid(row=7, column=0,columnspan=2, padx=10, pady=5)  # Move the button to row 5
+
 
 button_process = Button(root, text="Mask Video", command=process_video)
 button_process.grid(row=8, column=0, columnspan=2, padx=10, pady=5)
