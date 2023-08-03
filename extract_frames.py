@@ -90,4 +90,23 @@ class ExtractFrames:
         return sorted(filter(lambda x: os.path.isfile(os.path.join(self.unmasked_dir_name, x)),
                              os.listdir(self.unmasked_dir_name)))
 
+    def get_video_dimensions(self) -> str:
+
+        files = os.listdir(self.unmasked_dir_name)
+
+        # Filter for image files
+        image_files = [file for file in files if file.lower().endswith((".jpg", ".jpeg", ".png", ".gif"))]
+
+        # Get the path of the first image file
+        if image_files:
+            first_image_path = os.path.join(self.unmasked_dir_name, image_files[0])
+            print("Path of the first image file:", first_image_path)
+
+        image = Image.open(first_image_path)
+
+        # Get the dimensions (height and width) of the image
+        width, height = image.size
+
+        # Print the retrieved dimensions
+        return "Frame Dimensions: {}x{}".format(width, height)
 
