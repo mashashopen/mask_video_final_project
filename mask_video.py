@@ -9,7 +9,9 @@ from tkinter import Tk, Label, Entry, Button, filedialog, ttk, Scale, HORIZONTAL
 from extract_frames import ExtractFrames
 from mask_frame import MaskFrame
 from tqdm import tqdm
-import random
+import threading
+import concurrent.futures
+from queue import Queue
 
 class MaskVideo:
     def __init__(self, video_file: str, kernel_size: tuple, epsilon: float, destination_folder: str = None):
@@ -17,6 +19,8 @@ class MaskVideo:
         self.video_file_name = os.path.basename(video_file)  # Use the video file name without path
         self.kernel_size = kernel_size
         self.epsilon = epsilon
+        self.video_lock = threading.Lock()
+        self.progress_bar_lock = threading.Lock()
 
         self.fps = self.extract_frames_manager.extract_frames_and_get_fps()
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
@@ -60,36 +64,54 @@ class MaskVideo:
             writer.writerow(row)
         print("CSV file exported successfully.")
 
+    def mask_frame_and_write(self, frame_path, i, rows):
+        mask_frame_manager = MaskFrame(frame_path)
+        for face in mask_frame_manager.all_faces_locations():
+            row = {"number_of_frame": i, "x1": face[0], "y1": face[1], "x2": face[2], "y2": face[3]}
+            with self.progress_bar_lock:
+                rows.append(row)
+        masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
+        return masked_frame
+
     def mask_video_flow(self):
         start = time.time()
         unmasked_frames = self._get_unmasked_sorted_frames()
         rows = []
         total_frames = len(unmasked_frames)
+        
+        def mask_frames(i, masked_frame_queue):
+            full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + unmasked_frames[i]
+            masked_frame = self.mask_frame_and_write(full_path, i, rows)
+            masked_frame_queue.put((i, masked_frame))
+        
+        masked_frame_queue = Queue()
+
         with tqdm(total=total_frames, desc="Progress", unit="frame") as pbar:
-            for i, frame in enumerate(unmasked_frames):
-                full_path = self.extract_frames_manager.get_unmasked_dir_name() + "/" + frame
-                mask_frame_manager = MaskFrame(full_path)
-                for face in mask_frame_manager.all_faces_locations():
-                    row = {"number_of_frame": i, "x1": face[0], "y1": face[1], "x2": face[2], "y2": face[3]}
-                    rows.append(row)
-                masked_frame = mask_frame_manager.mask_frame(self.kernel_size, self.epsilon)
-                self.video.write(masked_frame)
-                # Calculate the percentage of masked frames
-                percentage = (i + 1) / total_frames * 100
-                # Update the progress bar using the percentage
-                pbar.update(1)
-                progress_bar['value'] = percentage
-                percentage_label.config(text=f"Progress: {percentage:.2f}%")  # Update the percentage label
-                root.update_idletasks()
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                futures = [executor.submit(mask_frames, i, masked_frame_queue) for i in range(total_frames)]
+                
+                # Create a dictionary to store frames as they are processed
+                masked_frames_dict = {}
+
+                for future in concurrent.futures.as_completed(futures):
+                    i, masked_frame = masked_frame_queue.get()
+                    masked_frames_dict[i] = masked_frame
+                    pbar.update(1)
+                    progress_bar['value'] = pbar.n / total_frames * 100
+                    percentage_label.config(text=f"Progress: {pbar.n / total_frames * 100:.2f}%")
+                    root.update_idletasks()
+
+                # Write the masked frames sequentially in the correct order
+                for i in range(total_frames):
+                    self.video.write(masked_frames_dict[i])
+
         self.video.release()
-        # Remove the unmasked frames directory
         unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
         self.extract_data_to_csv_file(rows, unmasked_frames)
         shutil.rmtree(unmasked_dir)
         end = time.time()
-        total = (end-start) / 60
+        total = (end - start) / 60
         print("The masking process time: ", total)
-
 
 
 root = Tk()
