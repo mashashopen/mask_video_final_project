@@ -26,10 +26,12 @@ class MaskVideo:
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         if destination_folder:
             # Use the chosen destination folder path if provided            
-            self.output_video_path = os.path.join(destination_folder, f"{timestamp}_{self.video_file_name.split('.mp4')[0]}-masked-{blur_level}-{coverage_level}.mp4")
+            self.output_video_path = os.path.join(destination_folder, f"{timestamp}_{self.video_file_name.split('.mp4')[0]}-masked-{blur_level}-{coverage_level}.mp4")           
+            self.destination_folder = destination_folder        
         else:
             # If destination_folder is not provided, use Downloads folder            
             self.output_video_path = os.path.join(os.path.expanduser("~"), "Downloads", f"{timestamp}_{self.video_file_name.split('.mp4')[0]}-masked-{blur_level}-{coverage_level}.mp4")
+            self.destination_folder = os.path.join(os.path.expanduser("~"), "Downloads")
 
         self.fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         self.video = cv2.VideoWriter(self.output_video_path, self.fourcc, self.fps, self._get_width_height())
@@ -50,8 +52,11 @@ class MaskVideo:
         # Specify the file name for the CSV file
         filename = filename_without_extension + ".csv"
 
-        # Open the CSV file in write mode
-        with open(filename, "w", newline="") as csvfile:
+        # Determine the destination path for the CSV file
+        csv_file_path = os.path.join(self.destination_folder, filename)
+
+        # Open the CSV file in write mode with the specified destination path
+        with open(csv_file_path, "w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             # Add comments or metadata to the CSV file
             csvfile.write(self.extract_frames_manager.get_video_dimensions() + "\n")
