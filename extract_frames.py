@@ -2,9 +2,10 @@ from datetime import timedelta
 import cv2
 import numpy as np
 import os
-import retina
 import sys
 import time
+from PIL import Image
+
 from PIL import Image
 
 UNMASKED_FRAMES_DIR = "-unmasked_frames"
@@ -110,4 +111,5 @@ class ExtractFrames:
 
         # Print the retrieved dimensions
         return "Frame Dimensions: {}x{}".format(width, height)
+
 

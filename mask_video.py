@@ -109,9 +109,9 @@ class MaskVideo:
                 # Write the masked frames sequentially in the correct order
                 for i in range(total_frames):
                     self.video.write(masked_frames_dict[i])
-
         self.video.release()
         unmasked_dir = self.extract_frames_manager.get_unmasked_dir_name()
+
         self.extract_data_to_csv_file(rows, unmasked_frames)
         shutil.rmtree(unmasked_dir)
         end = time.time()
@@ -133,7 +133,7 @@ aspect_ratio = desired_width / image.width
 desired_height = int(image.height * aspect_ratio)
 
 # Resize the image
-image = image.resize((desired_width, desired_height), Image.ANTIALIAS)
+image = image.resize((desired_width, desired_height), Image.LANCZOS)
 
 # Convert the image to a format compatible with tkinter
 photo = ImageTk.PhotoImage(image)
@@ -157,7 +157,7 @@ def update_masked_image():
 
     # Resize the masked image to the same size as the original image
     masked_image = Image.fromarray(masked_frame_rgb)
-    masked_image = masked_image.resize((desired_width, desired_height), Image.ANTIALIAS)
+    masked_image = masked_image.resize((desired_width, desired_height), Image.LANCZOS)
 
     # Convert the masked image to PhotoImage and update the displayed image
     masked_photo = ImageTk.PhotoImage(masked_image)
