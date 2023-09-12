@@ -3,9 +3,9 @@
 This project masks human faces in video the program gets as an input. It was created for the Gilaie-Dotan lab.    
 The face detection algorithm that was used here, is RetinaFace, based on this project:  https://github.com/serengil/retinaface   
 
-#############################################
+#############################################   
 run this project locally:  
-#############################################
+#############################################   
 Clone the repo and run: python mask_video.py   
 
 1. Choose parameters which with you want to mask the entire video and click on Update Parameters.
