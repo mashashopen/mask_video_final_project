@@ -14,6 +14,19 @@ Clone the repo and run: python mask_video.py
 
 
 The executable file can be found in this website: https://www.gilaie-dotan-lab.com/experiments  
-and you can simply download it and follow the instruction above.
+and you can simply download it and follow the instruction above.  
 
+
+
+# run analysis scripts:
+
+1. single video analysis:
+   run analysis.py <csv_file_path>  
+   * the file path should not contain spaces.  
+   the output is a graph that puts a red dot in the average location of the detected faces.
+
+2. multi videos analysis:
+   run multi_analysis.py <csv_file_path_1> <csv_file_path_2> <csv_file_path_3> ...<csv_file_path_n>
+   * the file paths should not contain spaces.
+   the output is a heat map that colors the map according to the frequency of detected faces in every pixel. areas with high frequency of detected faces will be colored with bright color, areas with low frequency of detected faces will be colored with dark color.   
 
