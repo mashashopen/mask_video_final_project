@@ -1,22 +1,32 @@
 # mask_video_final_project
 
-This project masks human faces in video the program gets as an input. It was created for the Gilaie-Dotan lab.    
-The face detection algorithm that was used here, is RetinaFace, based on this project:  https://github.com/serengil/retinaface   
+Dr. Sharon Gilai Dotan's laboratory houses a valuable collection of global videos. The goal is to share these videos online while safeguarding the privacy of individuals featured in them. To achieve this, we've created a specialized tool as part of our project. This tool enables users to view these worldwide videos and compile a database of videos with faces that the laboratory is comfortable sharing openly, free from privacy concerns.
+
+Our developed tool takes a video and various parameters as input and then generates the same video with human faces blurred to varying degrees, depending on the selected parameters. To accomplish this, we harnessed the power of RetinaFace, a renowned deep learning model for facial recognition:  https://github.com/serengil/retinaface   
 
 # run this project locally:  
    
 Clone the repo and run: python mask_video.py   
 
-1. Choose parameters which with you want to mask the entire video and click on Update Parameters.
-2. Click on Browse video file and choose the video you want to mask from your files browser.
-3. Click on Browse Destination and select the directory you want to download the video to (the default is your current directory).
-4. Click on Mask Video and wait for the video to be ready. It will be downloaded automatically in the end of the proccess. You can how it progresses looking on the displayed progress bar. Pay attention, the process run time is approximately 1 minute run per 1 second of the video. So for example, a video of duration 30 second, will be ready after 30 minutes.    
-
-
-The executable file can be found in this website: https://www.gilaie-dotan-lab.com/experiments  
+Or you can find the executable file can be found in this website: https://www.gilaie-dotan-lab.com/experiments  
 and you can simply download it and follow the instruction above.  
 
+## How to Use the Mask Video GUI
 
+1. Update Parameters: Adjust the blur level and mask size parameters using the sliders. Click 'Update Parameters' to apply the changes to the preview and video.
+
+2. Browse Video File: Click 'Browse video file' to select the video you want to mask.
+
+3. Browse Destination: Click 'Browse Destination' to choose the output folder for the masked video. If no destination is chosen, the masked video will be saved in the "Downloads" directory by default.
+
+4. Mask Video: Click 'Mask Video' to start the masking process.
+
+5. Progress Bar: The progress bar shows the percentage of frames that have been masked.
+
+6. Masking Finished: Once the masking process is complete, a pop-up message will display the path to the masked video. The saved format will be in the following pattern: "random_number-video_name-blur_level-mask_size".
+
+Note: The 'Blur Level' controls the amount of blur applied to the video frames, while the 'Mask size' controls the size of the masked region.
+Pay attention, the process run time is approximately 1 minute run per 1 second of the video. So for example, a video of duration 30 second, will be ready after 30 minutes.  
 
 # run analysis scripts:
 
