@@ -10,8 +10,8 @@ Our developed tool takes a video and various parameters as input and then genera
    
 Clone the repo and run: python mask_video.py   
 
-Or you can find the executable file can be found in this website: https://www.gilaie-dotan-lab.com/experiments  
-and you can simply download it and follow the instruction above.  
+Or you can find the executable file in this website: https://www.gilaie-dotan-lab.com/experiments  
+and you can simply download it and follow the instruction below.  
 
 ## How to Use the Mask Video GUI
 
