@@ -4,6 +4,7 @@ import numpy as np
 import os
 import sys
 import time
+from PIL import Image
 
 from PIL import Image
 
