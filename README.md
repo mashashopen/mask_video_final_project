@@ -4,13 +4,12 @@ Dr. Sharon Gilai Dotan's laboratory houses a valuable collection of global video
 
 Our developed tool takes a video and various parameters as input and then generates the same video with human faces blurred to varying degrees, depending on the selected parameters. To accomplish this, we harnessed the power of RetinaFace, a renowned deep learning model for facial recognition:  https://github.com/serengil/retinaface   
 
-![image](https://github.com/mashashopen/mask_video_final_project/assets/117173246/5d725871-8198-4d9f-a13c-6dd678a54f7a)
 
 # run this project locally:  
    
 Clone the repo and run: python mask_video.py   
 
-Or you can find the executable file in this website: https://www.gilaie-dotan-lab.com/experiments  
+Or you can find the executable file in this website: https://www.gilaie-dotan-lab.com/depth-judgements   
 and you can simply download it and follow the instruction below.  
 
 ## How to Use the Mask Video GUI
@@ -30,7 +29,6 @@ and you can simply download it and follow the instruction below.
 Note: The 'Blur Level' controls the amount of blur applied to the video frames, while the 'Mask size' controls the size of the masked region.
 Pay attention, the process run time is approximately 1 minute run per 1 second of the video. So for example, a video of duration 30 second, will be ready after 30 minutes. 
 
-![Screenshot 2023-08-25 140612](https://github.com/mashashopen/mask_video_final_project/assets/117173246/bde460bc-3085-43e4-9918-34b09079bec7)
 
 # run analysis scripts:
 
@@ -44,6 +42,5 @@ Pay attention, the process run time is approximately 1 minute run per 1 second o
    * the file paths should not contain spaces.  
    the output is a heat map that colors the map according to the frequency of detected faces in every pixel. areas with high frequency of detected faces will be colored with bright color, areas with low frequency of detected faces will be colored with dark color.
 
-![image](https://github.com/mashashopen/mask_video_final_project/assets/117173246/65a0de69-6f5e-4c22-be1d-120b432dda1e)
 
 
